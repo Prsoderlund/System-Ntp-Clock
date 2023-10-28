@@ -4,8 +4,11 @@ import static java.time.temporal.ChronoField.HOUR_OF_DAY;
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
+import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -17,6 +20,8 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     TimeService timeService = new DefaultTimeService(new NtpTimeRepository());
+    String localTimeColor = "#d90d0d";
+    String ntpTimeColor = "green";
     DateTimeFormatter formatter = new DateTimeFormatterBuilder()
             .appendValue(HOUR_OF_DAY, 2)
             .appendLiteral(':')
@@ -40,24 +45,42 @@ public class MainActivity extends AppCompatActivity {
         final TextView textView = (TextView) findViewById(R.id.timeField);
         textView.setText(timeString);
         */
-        updateTime();
+        startTimer();
     }
 
-    public void updateTime() {
+    public void startTimer() {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
                                       @Override
                                       public void run() {
-                                          LocalTime time = timeService.getTime();
-                                          //convert time to string
-                                          String timeString = formatter.format(time);
-                                          //display time
-                                          System.out.println("timeString = " + timeString);
-                                          final TextView textView = (TextView) findViewById(R.id.timeField);
-                                          textView.setText(timeString);
-                                      }
-                                  },
-                0, 1000);
+                                          runOnUiThread(new Runnable() {
+                                              @Override
+                                              public void run() {
+                                                  updateTime();
+                                              }
+                                          });                                      }
+                                  }
+                ,0, 1000);
+
+    }
+
+    private void updateTime() {
+        TestTime testTime = timeService.getTime();
+        LocalTime time = testTime.getTime();
+        boolean isNtpTime = testTime.isNtpTime();
+        //convert time to string
+        String timeString = formatter.format(time);
+        //display time
+        final TextView textView = (TextView) findViewById(R.id.timeField);
+        System.out.println("timeString = " + timeString);
+
+        if (isNtpTime) {
+            textView.setTextColor(Color.parseColor(ntpTimeColor));
+        } else {
+            textView.setTextColor(Color.parseColor(localTimeColor));
+        }
+        textView.setText(timeString);
+
 
     }
 

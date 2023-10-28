@@ -10,9 +10,12 @@ public class DefaultTimeService implements TimeService {
         this.ntpTimeRepo = ntpTimeRepository;
     }
     @Override
-    public LocalTime getTime() {
+    public TestTime getTime() {
         //try to get ntp time
         Optional<LocalTime> ntpTime = ntpTimeRepo.getTime();
-        return ntpTime.orElse(LocalTime.now());
+        if (ntpTime.isPresent()) {
+            return new TestTime(ntpTime.get(), true);
+        }
+        else return new TestTime(LocalTime.now(), false);
     }
 }
