@@ -3,13 +3,16 @@ package com.example.fsdpnjfd;
 import static java.time.temporal.ChronoField.HOUR_OF_DAY;
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
+import androidx.core.content.ContextCompat;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.widget.TextView;
 
 import java.time.LocalTime;
@@ -36,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        
       /*  LocalTime time = timeService.getTime();
         //convert time to string
         String timeString = formatter.format(time);
@@ -74,10 +79,19 @@ public class MainActivity extends AppCompatActivity {
         final TextView textView = (TextView) findViewById(R.id.timeField);
         System.out.println("timeString = " + timeString);
 
+
+        int ntpColorResource = R.color.ntpColor;
+        int localColorResource = R.color.localColor;
+
+        int ntpColor = ContextCompat.getColor(this, ntpColorResource);
+        int localColor = ContextCompat.getColor(this, localColorResource);
+
         if (isNtpTime) {
-            textView.setTextColor(Color.parseColor(ntpTimeColor));
+            System.out.println("ntpColor = " + ntpColor);
+            textView.setTextColor(ntpColor);
         } else {
-            textView.setTextColor(Color.parseColor(localTimeColor));
+            System.out.println("localColor = " + localColor);
+            textView.setTextColor(localColor);
         }
         textView.setText(timeString);
 
@@ -85,3 +99,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
